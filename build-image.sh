@@ -1,0 +1,1 @@
+docker build . -t my-nodejs-api:0.0.1

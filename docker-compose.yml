@@ -1,0 +1,44 @@
+version: '3.1'
+
+services:
+  mongodb-api:
+    container_name: mongodb-api
+    image: mongo:latest
+    volumes:
+      - ./mongodb/data/db:/data/db
+    ports:
+      - 27030:27017
+    
+    expose:
+      - 27017
+
+    networks:
+      - node-api-network
+
+  server-api:
+    container_name: server-api
+    image: my-nodejs-api:0.0.1
+    ports:
+      - 30000:30000
+      - 3030:3030
+    volumes:
+      - ./routes:/app/routes
+      - ./util:/app/util
+      - ./schema:/app/schema
+      - ./server.js:/app/server.js
+      - ./package.json:/app/package.json
+    env_file:
+      - .env
+    environment:
+      - MONGO_URI=mongodb://mongodb-api:27017
+      - PORT=3030
+    command:
+      - node
+      - server.js
+    networks:
+      - node-api-network
+
+
+networks:
+  node-api-network:
+    driver: bridge
